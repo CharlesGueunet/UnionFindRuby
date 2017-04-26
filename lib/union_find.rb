@@ -22,7 +22,7 @@ module UnionFind
         def find(elmt)
             raise IndexError, "Unexisting element" unless @components.include? elmt
 
-            @rpz[elmt] ||= elmt
+            @rpz[elmt]  ||= elmt
             @size[elmt] ||= 1
 
             until elmt == @rpz[elmt]
