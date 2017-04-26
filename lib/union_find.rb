@@ -4,47 +4,55 @@ module UnionFind
     class UnionFind
         attr_reader :components
 
+        # Create an empty union find
         def initialize
             @components = Set.new
             @rpz = {}
             @size = {}
         end
 
-        def add(comp)
-            @components.add(comp)
+        # add  elements given in the union find
+        def add(*elmts)
+            elmts.each do |elmt|
+                @components.add(elmt)
+            end
         end
 
-        def find(comp)
-            raise IndexError, "Unexisting comp" unless @components.include? comp
+        # find the representant of an element
+        def find(elmt)
+            raise IndexError, "Unexisting element" unless @components.include? elmt
 
-            @rpz[comp] ||= comp
-            @size[comp] ||= 1
+            @rpz[elmt] ||= elmt
+            @size[elmt] ||= 1
 
-            until comp == @rpz[comp]
+            until elmt == @rpz[elmt]
                 # path compression
-                @rpz[comp] = @rpz[@rpz[comp]]
+                @rpz[elmt] = @rpz[@rpz[elmt]]
                 # traversal
-                comp = @rpz[comp]
+                elmt = @rpz[elmt]
             end
 
-            return comp
+            return elmt
         end
 
-        def union(comp1, comp2)
-            root1 = find(comp1)
-            root2 = find(comp2)
+        # join elements of the union find
+        def union(*elmts)
+            return if elmts.size() < 2
+            rootFirst = find(elmts[0])
 
-            return nil if root1 == root2
+            elmts.drop(1).each do |elmt|
+                rootTmp = find(elmt)
 
-            if @size[root1] < @size[root2]
-                @size[root2] += @size[root1]
-                @rpz[root1] = root2
-            else
-                @size[root1] += @size[root2]
-                @rpz[root2] = root1
+                next if rootFirst == rootTmp
+
+                if @size[rootFirst] < @size[rootTmp]
+                    @size[rootTmp] += @size[rootFirst]
+                    @rpz[rootFirst] = rootTmp
+                else
+                    @size[rootFirst] += @size[rootTmp]
+                    @rpz[rootTmp] = rootFirst
+                end
             end
         end
-
     end
-
 end
